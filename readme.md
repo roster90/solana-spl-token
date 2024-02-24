@@ -10,3 +10,14 @@ https://www.quicknode.com/guides/solana-development/anchor/transfer-tokens
 
 
  solana program extend 26nVq6oP7XqZiaavfZCMhjDm1nGUrx4PRzoaKL2Vk3LY 1024
+
+
+ cargo clean
+ cargo build
+ cargo deploy
+
+ cargo test
+
+solana-keygen pubkey target/deploy/spl_token_study.json
+
+solana-keygen grind --starts-with ido:1 --ignore-case

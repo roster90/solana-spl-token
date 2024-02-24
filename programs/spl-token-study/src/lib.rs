@@ -6,7 +6,7 @@ use anchor_spl::{
 };
 
 
-declare_id!("7nHzb2ZDybLUQUgwW6Wa9yJzduDWnHRQh3stAogiXjta");
+declare_id!("6DtxPizvZdMSVdzk7NuuxknPCNFDVdxDX137wVQhyuBi");
 
 #[program]
 pub mod spl_token_study {
@@ -17,7 +17,8 @@ pub mod spl_token_study {
     use super::*;
     pub fn init_token(ctx: Context<InitToken>, metadata:InitTokenParams ) -> Result<()> {
         
-        let seeds = &["mint".as_bytes(), &[ctx.bumps.mint]];
+        let authority = &ctx.accounts.payer;
+        let seeds = &["mint".as_bytes(), &authority.key.as_ref(), &[ctx.bumps.mint]];
         let signer = [&seeds[..]];
 
         let account_info = vec![
@@ -33,8 +34,8 @@ pub mod spl_token_study {
         let create_token_intrusion_meta_data  = &CreateMetadataAccountV3 {
             metadata:  ctx.accounts.metadata.key(),
             mint: ctx.accounts.mint.key(),
-            mint_authority: ctx.accounts.payer.key(),
-            update_authority: (ctx.accounts.payer.key(), false),
+            mint_authority: ctx.accounts.mint.key(),
+            update_authority: (ctx.accounts.mint.key(), false),
             payer: ctx.accounts.payer.key(),
             system_program: ctx.accounts.system_program.key(),
             rent: Some(ctx.accounts.rent.key()),    
@@ -56,13 +57,12 @@ pub mod spl_token_study {
             account_info.as_slice(),
             &signer,
         )?;
-        
-
         Ok(())
     }
 
     pub fn mint_tokens(ctx: Context<MintTokens>, quantity: u64) -> Result<()> {
-        let seeds = &["mint".as_bytes(), &[ctx.bumps.mint]];
+        let user = &ctx.accounts.payer.key();
+        let seeds = &["mint".as_bytes(), user.as_ref(), &[ctx.bumps.mint]];
         let signer = [&seeds[..]];
 
         mint_to(
@@ -147,7 +147,7 @@ pub struct InitToken<'info> {
   pub metadata: UncheckedAccount<'info>,
   #[account(
       init,
-      seeds = [b"mint"],
+      seeds = [b"mint", payer.key().as_ref()],
       bump,
       payer = payer,
       mint::decimals = params.decimals,
@@ -167,7 +167,7 @@ pub struct InitToken<'info> {
 pub struct MintTokens<'info> {
     #[account(
         mut,
-        seeds = [b"mint"],
+        seeds = [b"mint", payer.key().as_ref()],
         bump,
         mint::authority = mint,
     )]
@@ -191,7 +191,7 @@ pub struct MintTokens<'info> {
 pub struct  BurnToken<'info> {
     #[account(
         mut,
-        seeds = [b"mint"],
+        seeds = [b"mint", authority.key().as_ref()],
         bump,
         mint::authority = mint,
     )]
