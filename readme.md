@@ -9,7 +9,7 @@ https://www.quicknode.com/guides/solana-development/anchor/transfer-tokens
 
 
 
- solana program extend 26nVq6oP7XqZiaavfZCMhjDm1nGUrx4PRzoaKL2Vk3LY 1024
+ solana program extend 6DtxPizvZdMSVdzk7NuuxknPCNFDVdxDX137wVQhyuBi 1024
 
 
  cargo clean
